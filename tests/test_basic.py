@@ -1,8 +1,6 @@
 from project.graph_info import *
 import networkx as nx
-import os
 import pytest
-import pydot
 
 def setup_module(module):
     print("basic setup module")
