@@ -25,9 +25,7 @@ def test_get_graph_info_notexist():
 def test_save_graph():
     n, m, labels = 3, 9, ["h", "m"]
     filename = "tests/out_test_save_graph.dot"
-
     save_two_cycle_graph(n, m, labels, filename)
     graph = nx.drawing.nx_pydot.read_dot(filename)
-
     assert graph.number_of_nodes() == n + m + 1
     assert set(cfpq_data.get_sorted_labels(graph)) == set(labels)

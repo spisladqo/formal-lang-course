@@ -11,12 +11,9 @@ class GraphInfo:
 def get_graph_info(name: str) -> GraphInfo:
     graph_path = cfpq_data.download(name)
     graph = cfpq_data.graph_from_csv(graph_path)
-
     node_n = graph.number_of_nodes()
     edges_n = graph.number_of_edges()
-
     labels = cfpq_data.get_sorted_labels(graph)
-
     return GraphInfo(node_n, edges_n, labels)
 
 def save_two_cycle_graph(n: int, m: int, labels: Tuple[str, str], filepath: str) -> bool:
