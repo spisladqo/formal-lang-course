@@ -1,5 +1,7 @@
-import pytest  # noqa: F401
-import project  # on import will print something from __init__ file # noqa: F401
+from project.graph_info import get_graph_info, save_two_cycle_graph
+import networkx as nx
+import pytest
+import cfpq_data
 
 
 def setup_module(module):
@@ -10,9 +12,22 @@ def teardown_module(module):
     print("basic teardown module")
 
 
-def test_1():
-    assert 1 + 1 == 2
+def test_get_graph_info_wc():
+    info = get_graph_info("wc")
+    assert info.node_num == 332
+    assert info.edge_num == 269
+    assert info.labels == ["d", "a"]
 
 
-def test_2():
-    assert "1" + "1" == "11"
+def test_get_graph_info_notexist():
+    with pytest.raises(FileNotFoundError):
+        get_graph_info("Pridnestrovie")
+
+
+def test_save_graph():
+    n, m, labels = 3, 9, ["h", "m"]
+    filename = "tests/out_test_save_graph.dot"
+    save_two_cycle_graph(n, m, labels, filename)
+    graph = nx.drawing.nx_pydot.read_dot(filename)
+    assert graph.number_of_nodes() == n + m + 1
+    assert set(cfpq_data.get_sorted_labels(graph)) == set(labels)
