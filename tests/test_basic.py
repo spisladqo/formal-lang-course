@@ -1,6 +1,8 @@
-from project.graph_info import *
+from project.graph_info import get_graph_info, save_two_cycle_graph
 import networkx as nx
 import pytest
+import cfpq_data
+
 
 def setup_module(module):
     print("basic setup module")

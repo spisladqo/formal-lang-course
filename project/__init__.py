@@ -1,1 +1,1 @@
-from project import graph_info
+print("import sources directory")
