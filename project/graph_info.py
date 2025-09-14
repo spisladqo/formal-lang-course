@@ -1,7 +1,7 @@
+from dataclasses import dataclass
+from typing import Tuple
 import cfpq_data
 import networkx
-from typing import Tuple
-from dataclasses import dataclass
 
 
 @dataclass
