@@ -26,4 +26,4 @@ def graph_to_nfa(
     for f in final_states:
         nfa.add_final_state(State(f))
 
-    return nfa
+    return nfa.minimize()
