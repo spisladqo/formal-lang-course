@@ -1,4 +1,4 @@
-from project.automaton_conversion import regex_to_dfa
+from project.finite_automata import regex_to_dfa
 
 
 # designed by @aartdem
