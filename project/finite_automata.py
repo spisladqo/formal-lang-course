@@ -9,7 +9,7 @@ from networkx import MultiDiGraph
 def regex_to_dfa(regex: str) -> DeterministicFiniteAutomaton:
     re = Regex(regex)
     dfa = re.to_epsilon_nfa().to_deterministic()
-    return dfa
+    return dfa.minimize()
 
 
 def graph_to_nfa(
@@ -26,4 +26,4 @@ def graph_to_nfa(
     for f in final_states:
         nfa.add_final_state(State(f))
 
-    return nfa.minimize()
+    return nfa
