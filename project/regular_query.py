@@ -7,8 +7,8 @@ from scipy.sparse import coo_array
 @dataclass
 class AdjacencyMatrixFA:
     adj_matrices: dict[coo_array]
-    start_states: list
-    final_states: list
+    start_states: set
+    final_states: set
     states_num: int
 
     def __init__(self, nfa: NondeterministicFiniteAutomaton):
@@ -22,8 +22,8 @@ class AdjacencyMatrixFA:
 
         for v1, edge in delta.items():
             for s, v2 in edge.items():
-                row[s].append(v1.value)
                 for v in v2:
+                    row[s].append(v1.value)
                     col[s].append(v.value)
 
         self.adj_matrices = {}
