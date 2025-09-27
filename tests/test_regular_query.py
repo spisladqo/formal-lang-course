@@ -2,7 +2,7 @@ from pyformlang.finite_automaton import NondeterministicFiniteAutomaton
 from pyformlang.finite_automaton import Symbol
 from scipy.sparse import coo_array
 import numpy as np
-from project.regular_query import AdjacencyMatrixFA
+from project.regular_query import AdjacencyMatrixFA, intersect_automata
 
 
 def test_init():
@@ -80,3 +80,34 @@ def test_is_not_empty():
 
     assert not amfa.is_empty()
     assert amfa.accepts("aa")
+
+
+def test_intersect_automata():
+    nfa1 = NondeterministicFiniteAutomaton()
+    nfa1.add_start_state(0)
+    nfa1.add_final_state(0)
+    nfa1.add_transitions([(0, "a", 0), (1, "a", 1),(0, "b", 1), (1, "b", 0)])
+    amfa1 = AdjacencyMatrixFA(nfa1)
+
+    nfa2 = NondeterministicFiniteAutomaton()
+    nfa2.add_start_state(0)
+    nfa2.add_final_state(1)
+    nfa2.add_transitions([(0, "a", 1), (1, "b", 0)])
+    amfa2 = AdjacencyMatrixFA(nfa2)
+
+    amfa3 = intersect_automata(amfa1, amfa2)
+
+    expected = {
+        "a": coo_array(([1, 1], ([0, 2], [1, 3])), shape=(4, 4)),
+        "b": coo_array(([1, 1], ([1, 3], [2, 0])), shape=(4, 4))
+    }
+
+    for s, arr in expected.items():
+        assert s in amfa3.adj_matrices
+        print(s, amfa3.adj_matrices[s])
+        assert np.array_equal(amfa3.adj_matrices[s].toarray(),
+                             arr.toarray())
+
+    assert amfa3.start_states== {0}
+    assert amfa3.final_states == {1}
+    assert amfa3.states_num == 4
