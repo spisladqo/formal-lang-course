@@ -87,7 +87,6 @@ class AdjacencyMatrixFA:
         changed = True
         while changed:
             new_closure = closure.dot(closure)
-            print(new_closure)
             ineq_matr = (closure != new_closure)
             changed = (ineq_matr.nnz != 0)
             closure = new_closure

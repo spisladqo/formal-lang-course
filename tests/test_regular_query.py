@@ -61,3 +61,22 @@ def test_not_accepts_word_symbols():
     amfa = AdjacencyMatrixFA(nfa)
 
     assert not amfa.accepts([Symbol("aaa")])
+
+def test_is_empty():
+    nfa = NondeterministicFiniteAutomaton()
+    nfa.add_transitions([(0, "a", 0), (1, "d", 1)])
+    nfa.add_start_state(0)
+    nfa.add_final_state(1)
+    amfa = AdjacencyMatrixFA(nfa)
+
+    assert amfa.is_empty()
+
+def test_is_not_empty():
+    nfa = NondeterministicFiniteAutomaton()
+    nfa.add_transitions([(0, "a", 0), (0, "a", 1), (1, "d", 1)])
+    nfa.add_start_state(0)
+    nfa.add_final_state(1)
+    amfa = AdjacencyMatrixFA(nfa)
+
+    assert not amfa.is_empty()
+    assert amfa.accepts("aa")
