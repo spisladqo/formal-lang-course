@@ -1,9 +1,12 @@
 from typing import Iterable
+from networkx import MultiDiGraph
 import numpy as np
 from pyformlang.finite_automaton import NondeterministicFiniteAutomaton
 from pyformlang.finite_automaton import Symbol
 from dataclasses import dataclass
+from project.finite_automata import graph_to_nfa, regex_to_dfa
 from scipy.sparse import coo_array, csr_array, identity, kron
+
 
 @dataclass
 class AdjacencyMatrixFA:
@@ -122,15 +125,15 @@ def intersect_automata(automaton1: AdjacencyMatrixFA,
     automaton3 = AdjacencyMatrixFA.__new__(AdjacencyMatrixFA)
     automaton3.adj_matrices = adj_matrices
 
-    # fst.start_state * fst.num_states + snd.start_state
+    # fst.start_state * snd.num_states + snd.start_state
     for s1 in automaton1.start_states:
         for s2 in automaton2.start_states:
-            s3 = s1.value * automaton1.states_num + s2.value
+            s3 = s1.value * automaton2.states_num + s2.value
             start_states.add(s3)
 
     for s1 in automaton1.final_states:
         for s2 in automaton2.final_states:
-            s3 = s1.value * automaton1.states_num + s2.value
+            s3 = s1.value * automaton2.states_num + s2.value
             final_states.add(s3)
 
     automaton3.final_states = final_states
@@ -138,3 +141,35 @@ def intersect_automata(automaton1: AdjacencyMatrixFA,
     automaton3.states_num = automaton1.states_num * automaton2.states_num
 
     return automaton3
+
+
+def tensor_based_rpq(regex: str, graph: MultiDiGraph, start_nodes: set[int],
+      final_nodes: set[int]) -> set[tuple[int, int]]:
+    regraph = regex_to_dfa(regex)
+    nfa = graph_to_nfa(graph, start_nodes, final_nodes)
+
+    autom1 = AdjacencyMatrixFA(nfa)
+    autom2 = AdjacencyMatrixFA(regraph)
+
+    autom3 = intersect_automata(autom1, autom2)
+
+    clos: coo_array = autom3.trans_clos()
+
+    num = autom3.states_num
+    pairs: set[tuple] = set()
+
+    for start1 in autom1.start_states:
+        for start2 in autom2.start_states:
+            start3 = start1 * autom2.states_num + start2
+            if not (start3 in autom3.start_states):
+                continue
+            row = [0] * num
+            row[start3.value] = 1
+            col = [0] * num
+            data = [1] * num
+            start_vec = coo_array((data, (row, col)), shape=(num, num))
+            final_vec = start_vec.dot(clos)
+            for final in final_vec:
+                pairs.add((start1, final))
+
+    return pairs
