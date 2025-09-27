@@ -3,7 +3,7 @@ import numpy as np
 from pyformlang.finite_automaton import NondeterministicFiniteAutomaton
 from pyformlang.finite_automaton import Symbol
 from dataclasses import dataclass
-from scipy.sparse import coo_array, csr_array, identity
+from scipy.sparse import coo_array, csr_array, identity, kron
 
 @dataclass
 class AdjacencyMatrixFA:
@@ -92,3 +92,49 @@ class AdjacencyMatrixFA:
             closure = new_closure
 
         return closure
+
+
+def intersect_automata(automaton1: AdjacencyMatrixFA,
+    automaton2: AdjacencyMatrixFA) -> AdjacencyMatrixFA:
+
+    adj_matrices = {}
+    start_states = set()
+    final_states = set()
+
+    for sym in automaton1.adj_matrices.keys():
+        adj_matrices[sym] = kron(
+            automaton1.adj_matrices[sym],
+            automaton2.adj_matrices[sym]
+            )
+        # print(adj_matrices[sym])
+
+    for sym in automaton2.adj_matrices.keys():
+        if sym in automaton1.adj_matrices.keys():
+            continue
+        adj_matrices[sym] = kron(
+            automaton1.adj_matrices[sym],
+            automaton2.adj_matrices[sym]
+        )
+        # print(adj_matrices[sym])
+
+    # print(adj_matrices)
+
+    automaton3 = AdjacencyMatrixFA.__new__(AdjacencyMatrixFA)
+    automaton3.adj_matrices = adj_matrices
+
+    # fst.start_state * fst.num_states + snd.start_state
+    for s1 in automaton1.start_states:
+        for s2 in automaton2.start_states:
+            s3 = s1.value * automaton1.states_num + s2.value
+            start_states.add(s3)
+
+    for s1 in automaton1.final_states:
+        for s2 in automaton2.final_states:
+            s3 = s1.value * automaton1.states_num + s2.value
+            final_states.add(s3)
+
+    automaton3.final_states = final_states
+    automaton3.start_states = start_states
+    automaton3.states_num = automaton1.states_num * automaton2.states_num
+
+    return automaton3
