@@ -17,8 +17,9 @@ def create_trans_dict(automaton: AdjacencyMatrixFA) -> dict[str, dict[int, set[i
     return transitions
 
 
-def ms_bfs_based_rpq(regex: str, graph: MultiDiGraph, start_nodes: set[int],
-                     final_nodes: set[int]) -> set[tuple[int, int]]:
+def ms_bfs_based_rpq(
+    regex: str, graph: MultiDiGraph, start_nodes: set[int], final_nodes: set[int]
+) -> set[tuple[int, int]]:
     regex_dfa = regex_to_dfa(regex)
     graph_nfa = graph_to_nfa(graph, start_nodes, final_nodes)
 
