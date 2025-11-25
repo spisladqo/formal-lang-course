@@ -1,7 +1,6 @@
 from networkx import MultiDiGraph
 from project.finite_automata import regex_to_dfa, graph_to_nfa
 from project.regular_query import AdjacencyMatrixFA
-from networkx import MultiDiGraph
 from collections import deque
 
 
