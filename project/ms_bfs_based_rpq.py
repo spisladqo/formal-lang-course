@@ -36,7 +36,11 @@ def ms_bfs_based_rpq(
         symbol: decomposition.transpose().tocsr()
         for symbol, decomposition in graph_adj_matrices.items()
     }
-    while front.nnz:
+
+    iteration = 0
+    max_iterations = 1000
+    while front.nnz and iteration < max_iterations:
+        iteration += 1
         new_front_blocks = {}
         for symbol in common_symbols:
             this_symbol_blocks = []
@@ -53,6 +57,11 @@ def ms_bfs_based_rpq(
             new_front_blocks[symbol] = sparse.vstack(this_symbol_blocks)
         front = sum(new_front_blocks.values()) > visited
         visited = visited + front
+
+    if iteration >= max_iterations:
+        print(
+            f"iteration count = {iteration}, which exceeds max_iterations = {max_iterations}"
+        )
     result = set()
     for i, graph_start_state in enumerate(graph_adj.start_states):
         result_block = visited[
