@@ -4,20 +4,12 @@
 # Otherwise, please report it
 from copy import deepcopy
 import pytest
-from grammars_constants import REGEXP_CFG, GRAMMARS, GRAMMARS_DIFFERENT, CFG_EBNF
-from helper import generate_rnd_start_and_final
-from rpq_template_test import (
-    rpq_cfpq_test,
-    different_grammars_test,
-    cfpq_algorithm_test,
-)
-from cfpq_concrete_cases import CaseCFPQ, CASES_CFPQ
 
 # Fix import statements in try block to run tests
 try:
     from project.hellings import hellings_based_cfpq
     from project.matrix_based_cfpq import matrix_based_cfpq
-    from project.task8 import tensor_based_cfpq, cfg_to_rsm, ebnf_to_rsm
+    from project.tensor_based_cfpq import tensor_based_cfpq, cfg_to_rsm, ebnf_to_rsm
     from project.task9 import gll_based_cfpq
 except ImportError:
     pytestmark = pytest.mark.skip("Task 9 is not ready to test!")
