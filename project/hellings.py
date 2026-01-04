@@ -1,18 +1,18 @@
-from pyformlang.cfg import CFG, Epsilon, Production, Variable
+from pyformlang.cfg import CFG, Terminal, Production, Epsilon
 import networkx as nx
 
+
 def cfg_to_weak_normal_form(cfg: CFG) -> CFG:
-    cnf = cfg.to_normal_form()
-    prods = set(cnf.prods)
+    prods = set()
 
-    for var in cfg.get_nullable_symbols():
-        v = Variable(var.value)
-        prods.add(Production(v, []))
-        prods.add(Production(v, [Epsilon()]))
+    for prod in cfg.to_normal_form().productions:
+        prods.add(prod)
 
-    wcnf = CFG(start_symbol=cfg.start_symbol, productions=prods).remove_useless_symbols()
+    for sym in cfg.get_nullable_symbols():
+        prods.add(Production(sym, [Epsilon()], filtering=False))
 
-    return wcnf
+    return CFG(start_symbol=cfg.start_symbol, productions=prods)
+
 
 def hellings_based_cfpq(
     cfg: CFG,
