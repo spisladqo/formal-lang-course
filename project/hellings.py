@@ -9,6 +9,6 @@ def cfg_to_weak_normal_form(cfg: CFG) -> CFG:
         prods.add(Production(v, []))
         prods.add(Production(v, [Epsilon()]))
 
-    wcnf = CFG(start_symbol=cfg.start_symbol, productions=prods)
+    wcnf = CFG(start_symbol=cfg.start_symbol, productions=prods).remove_useless_symbols()
 
     return wcnf
