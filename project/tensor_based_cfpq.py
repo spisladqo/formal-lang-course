@@ -2,6 +2,7 @@ import networkx as nx
 from pyformlang.cfg import CFG
 from pyformlang.finite_automaton import NondeterministicFiniteAutomaton, State
 from pyformlang.rsa import RecursiveAutomaton
+from scipy import sparse
 
 from project.finite_automata import graph_to_nfa
 from project.regular_query import AdjacencyMatrixFA, intersect_automata
