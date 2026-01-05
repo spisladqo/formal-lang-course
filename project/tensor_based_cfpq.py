@@ -10,7 +10,7 @@ from pyformlang.cfg import CFG
 from pyformlang.rsa import RecursiveAutomaton
 
 from project.finite_automata import graph_to_nfa
-from project.regular_query import AdjacencyMatrixFA, intersect_automata
+
 
 def cfg_to_rsm(cfg: CFG) -> RecursiveAutomaton:
     return RecursiveAutomaton.from_text(cfg.to_text())
@@ -41,21 +41,6 @@ def _build_rsm_nfa(rsm: RecursiveAutomaton) -> NondeterministicFiniteAutomaton:
             nfa.add_final_state(State((symbol, _unwrap(final_state))))
 
     return nfa
-
-
-def _get_product_start_indices(
-    intersection: AdjacencyMatrixFA, rsm_matrix: AdjacencyMatrixFA
-) -> set[int]:
-    rsm_start_states = {
-        state
-        for state, idx in rsm_matrix.states.items()
-        if idx in rsm_matrix.start_indices
-    }
-    return {
-        idx
-        for (graph_state, rsm_state), idx in intersection.states.items()
-        if rsm_state in rsm_start_states
-    }
 
 
 class AdjacencyMatrixFA:
@@ -158,6 +143,21 @@ def intersect_automata(
         )
 
     return result
+
+
+def _get_product_start_indices(
+    intersection: AdjacencyMatrixFA, rsm_matrix: AdjacencyMatrixFA
+) -> set[int]:
+    rsm_start_states = {
+        state
+        for state, idx in rsm_matrix.states.items()
+        if idx in rsm_matrix.start_indices
+    }
+    return {
+        idx
+        for (graph_state, rsm_state), idx in intersection.states.items()
+        if rsm_state in rsm_start_states
+    }
 
 
 def _matrix_semiring_bfs(
@@ -274,9 +274,7 @@ def tensor_based_cfpq(
         matrix = graph_matrix.boolean_decomposition[init_label]
         rows, cols = matrix.nonzero()
 
-        idx_to_graph_state = {
-            idx: state for state, idx in graph_matrix.states.items()
-        }
+        idx_to_graph_state = {idx: state for state, idx in graph_matrix.states.items()}
 
         def _unwrap(x):
             return x.value if hasattr(x, "value") else x
